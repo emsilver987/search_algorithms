@@ -1,12 +1,14 @@
 import random
+from breadth_first_search import breadth_first_search
 
 goalState = [[1, 2, 3], [4, 5, 6], [7, 8, None]]
 
-random.seed(42)
+random.seed(47)
 
 def main():
-    state = generateRandomState()
-    outputState(state)
+    initalState = generateRandomState()
+    outputState(initalState)
+    breadth_first_search(initalState, goalState)
 
 
 
