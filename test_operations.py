@@ -1,55 +1,55 @@
 import unittest
-from operations import moveLeft
+from operations import swapIndicies
 
-class TestMoveLeft(unittest.TestCase):
+class TestSwapIndicies(unittest.TestCase):
     
-    def test_moveLeft_basic(self):
-        """Test basic left move functionality"""
-        state = [[1, 2, 3], [4, 0, 6], [7, 8, 9]]
-        emptyIndex = [1, 1] 
-        choiceIndex = [1, 0]  
+    def test_swap_basic(self):
+        """Test basic swap functionality"""
+        state = [['A', 'B', 'C'], ['D', 0, 'E'], ['F', 'G', 'H']]
+        emptyIndex = [1, 1]  # empty space position
+        choiceIndex = [0, 1]  # element 'B' position
         
-        original_state = [row[:] for row in state]
+        swapIndicies(state, emptyIndex, choiceIndex)
         
-        moveLeft(state, emptyIndex, choiceIndex)
-        
-        # After move: empty space should be at [1,0] and 4 should be at [1,1]
-        expected = [[1, 2, 3], [0, 4, 6], [7, 8, 9]]
+        # After swap: empty space moves to [0,1], 'B' moves to [1,1]
+        expected = [['A', 0, 'C'], ['D', 'B', 'E'], ['F', 'G', 'H']]
         self.assertEqual(state, expected)
     
-    def test_moveLeft_corner_case(self):
-        """Test moving from top-left corner"""
-        state = [[0, 2, 3], [4, 5, 6], [7, 8, 9]]
+    def test_swap_corner(self):
+        """Test swapping from corner position"""
+        state = [[0, 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
         emptyIndex = [0, 0]  # empty at top-left
-        choiceIndex = [0, 1]  # element to move at [0,1]
+        choiceIndex = [1, 0]  # element 'D' below empty
         
-        moveLeft(state, emptyIndex, choiceIndex)
+        swapIndicies(state, emptyIndex, choiceIndex)
         
-        expected = [[2, 0, 3], [4, 5, 6], [7, 8, 9]]
+        # 'D' moves up to [0,0], empty moves down to [1,0]
+        expected = [['D', 'B', 'C'], [0, 'E', 'F'], ['G', 'H', 'I']]
         self.assertEqual(state, expected)
     
-    def test_moveLeft_bottom_row(self):
-        """Test moving in bottom row"""
-        state = [[1, 2, 3], [4, 5, 6], [7, 0, 9]]
+    def test_swap_middle(self):
+        """Test swapping in middle of grid"""
+        state = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 0, 'I']]
         emptyIndex = [2, 1]  # empty at [2,1]
-        choiceIndex = [2, 0]  # element to move at [2,0]
+        choiceIndex = [1, 1]  # element 'E' at [1,1]
         
-        moveLeft(state, emptyIndex, choiceIndex)
+        swapIndicies(state, emptyIndex, choiceIndex)
         
-        expected = [[1, 2, 3], [4, 5, 6], [0, 7, 9]]
+        # 'E' moves down to [2,1], empty moves up to [1,1]
+        expected = [['A', 'B', 'C'], ['D', 0, 'F'], ['G', 'E', 'I']]
         self.assertEqual(state, expected)
     
-    def test_moveLeft_same_position(self):
-        """Test moving when empty and choice are the same position"""
-        state = [[1, 2, 3], [4, 0, 6], [7, 8, 9]]
+    def test_swap_same_position(self):
+        """Test that no change occurs when indices are the same"""
+        state = [['A', 'B', 'C'], ['D', 0, 'E'], ['F', 'G', 'H']]
         emptyIndex = [1, 1]
         choiceIndex = [1, 1]  # same position
         
         original_state = [row[:] for row in state]
-        moveLeft(state, emptyIndex, choiceIndex)
+        swapIndicies(state, emptyIndex, choiceIndex)
         
         # Should remain unchanged
         self.assertEqual(state, original_state)
-
+        
 if __name__ == '__main__':
     unittest.main()
