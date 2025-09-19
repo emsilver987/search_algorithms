@@ -3,12 +3,14 @@ from array_functions import flatten, get_neighbors
 
 def breadth_first_search(initial_state, goal_state):
     """Find path from initial state to goal state using BFS"""
+
     # Convert 2D arrays to 1D for easier handling
     initial = flatten(initial_state)
     goal = flatten(goal_state)
     
     if initial == goal:
-        return [], 0  # Empty path, 0 moves
+        # Empty path, 0 moves
+        return [], 0  
     
     queue = deque([(initial, [])])  # (state, path)
     visited = {tuple(initial)}
@@ -19,14 +21,16 @@ def breadth_first_search(initial_state, goal_state):
         states_explored += 1
         
         if current == goal:
-            return path, len(path)  # Return path and count
+            # Return path and count
+            return path, len(path)  
         
         for neighbor in get_neighbors(current):
             neighbor_tuple = tuple(neighbor)
             if neighbor_tuple not in visited:
                 visited.add(neighbor_tuple)
                 queue.append((neighbor, path + [neighbor]))
-    
+
+    # Will only make it here if no soultion is found
     return None, -1  # No solution found
 
 

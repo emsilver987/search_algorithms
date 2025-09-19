@@ -1,7 +1,9 @@
+
 def get_neighbors(state):
     """Get all possible next states by moving the empty space"""
     neighbors = []
     zero_pos = state.index(0)
+    # this gives us the row and column where our 0(null value) is
     row, col = zero_pos // 3, zero_pos % 3
     
     # Try all 4 directions
@@ -13,8 +15,10 @@ def get_neighbors(state):
             new_state[zero_pos], new_state[new_zero_pos] = new_state[new_zero_pos], new_state[zero_pos]
             neighbors.append(new_state)
     
+    # returns all neighbors possible
     return neighbors
 
+# this funciton is not absoultey necessary but makes it easier to traverse array
 def flatten(array_2d):
     """Convert 2D array to 1D list"""
     if len(array_2d) == 9:  # Already 1D
