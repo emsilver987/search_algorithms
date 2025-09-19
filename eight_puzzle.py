@@ -1,5 +1,6 @@
 import random
 from breadth_first_search import breadth_first_search
+from a_star_search import a_star_search
 
 goalState = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
 
@@ -9,12 +10,20 @@ random.seed(10)
 
 def main():
     i = 12
-    for _ in range(3):
+    for test_num in range(3):
         random.seed(i)
         initalState = generateRandomState()
         outputState(initalState)
-        path, count = breadth_first_search(initalState, goalState)
-        print(f"Number of moves using BFS: {count}")
+        
+        # Test BFS
+        path_bfs, count_bfs = breadth_first_search(initalState, goalState)
+        print(f"Number of moves using BFS: {count_bfs}")
+        
+        # Test A*
+        path_astar, count_astar = a_star_search(initalState, goalState)
+        print(f"Number of moves using A*: {count_astar}")
+        
+        print(f"Test {test_num + 1} completed\n")
         i += 5
 
 

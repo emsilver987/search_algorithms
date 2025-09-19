@@ -1,5 +1,4 @@
 import unittest
-from operations import swapIndicies
 
 class TestSwapIndicies(unittest.TestCase):
     
