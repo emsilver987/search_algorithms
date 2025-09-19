@@ -4,8 +4,6 @@ from a_star_search import a_star_search
 
 goalState = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
 
-
-
 random.seed(10)
 
 def main():

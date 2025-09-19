@@ -1,54 +1,110 @@
 import unittest
+from array_functions import get_neighbors, flatten
+from breadth_first_search import breadth_first_search, eval_state
+from a_star_search import a_star_search, misplaced_tiles_heuristic
 
-class TestSwapIndicies(unittest.TestCase):
+class TestArrayFunctions(unittest.TestCase):
     
-    def test_swap_basic(self):
-        """Test basic swap functionality"""
-        state = [['A', 'B', 'C'], ['D', 0, 'E'], ['F', 'G', 'H']]
-        emptyIndex = [1, 1]  # empty space position
-        choiceIndex = [0, 1]  # element 'B' position
-        
-        swapIndicies(state, emptyIndex, choiceIndex)
-        
-        # After swap: empty space moves to [0,1], 'B' moves to [1,1]
-        expected = [['A', 0, 'C'], ['D', 'B', 'E'], ['F', 'G', 'H']]
-        self.assertEqual(state, expected)
+    def test_flatten_2d_to_1d(self):
+        """Test flattening 2D array to 1D"""
+        array_2d = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+        expected = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        result = flatten(array_2d)
+        self.assertEqual(result, expected)
     
-    def test_swap_corner(self):
-        """Test swapping from corner position"""
-        state = [[0, 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
-        emptyIndex = [0, 0]  # empty at top-left
-        choiceIndex = [1, 0]  # element 'D' below empty
-        
-        swapIndicies(state, emptyIndex, choiceIndex)
-        
-        # 'D' moves up to [0,0], empty moves down to [1,0]
-        expected = [['D', 'B', 'C'], [0, 'E', 'F'], ['G', 'H', 'I']]
-        self.assertEqual(state, expected)
+    def test_flatten_already_1d(self):
+        """Test flattening when already 1D"""
+        array_1d = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        result = flatten(array_1d)
+        self.assertEqual(result, array_1d)
     
-    def test_swap_middle(self):
-        """Test swapping in middle of grid"""
-        state = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 0, 'I']]
-        emptyIndex = [2, 1]  # empty at [2,1]
-        choiceIndex = [1, 1]  # element 'E' at [1,1]
+    def test_get_neighbors_basic(self):
+        """Test getting neighbors from middle position"""
+        state = [1, 2, 3, 4, 0, 6, 7, 8, 5]  # Empty at position 4
+        neighbors = get_neighbors(state)
         
-        swapIndicies(state, emptyIndex, choiceIndex)
+        # Should have 4 neighbors (up, down, left, right)
+        self.assertEqual(len(neighbors), 4)
         
-        # 'E' moves down to [2,1], empty moves up to [1,1]
-        expected = [['A', 'B', 'C'], ['D', 0, 'F'], ['G', 'E', 'I']]
-        self.assertEqual(state, expected)
+        # Check that all neighbors are valid states
+        for neighbor in neighbors:
+            self.assertEqual(len(neighbor), 9)
+            self.assertEqual(neighbor.count(0), 1)  # Exactly one empty space
     
-    def test_swap_same_position(self):
-        """Test that no change occurs when indices are the same"""
-        state = [['A', 'B', 'C'], ['D', 0, 'E'], ['F', 'G', 'H']]
-        emptyIndex = [1, 1]
-        choiceIndex = [1, 1]  # same position
+    def test_get_neighbors_corner(self):
+        """Test getting neighbors from corner position"""
+        state = [0, 2, 3, 4, 5, 6, 7, 8, 1]  # Empty at position 0 (top-left)
+        neighbors = get_neighbors(state)
         
-        original_state = [row[:] for row in state]
-        swapIndicies(state, emptyIndex, choiceIndex)
+        # Should have 2 neighbors (right, down)
+        self.assertEqual(len(neighbors), 2)
+
+class TestSearchAlgorithms(unittest.TestCase):
+    
+    def test_bfs_simple_case(self):
+        """Test BFS with a simple 1-move case"""
+        initial = [[1, 2, 3], [4, 0, 6], [7, 8, 5]]
+        goal = [[1, 2, 3], [4, 6, 0], [7, 8, 5]]
         
-        # Should remain unchanged
-        self.assertEqual(state, original_state)
+        path, count = breadth_first_search(initial, goal)
         
+        self.assertIsNotNone(path)
+        self.assertEqual(count, 1)
+    
+    def test_astar_simple_case(self):
+        """Test A* with a simple 1-move case"""
+        initial = [[1, 2, 3], [4, 0, 6], [7, 8, 5]]
+        goal = [[1, 2, 3], [4, 6, 0], [7, 8, 5]]
+        
+        path, count = a_star_search(initial, goal)
+        
+        self.assertIsNotNone(path)
+        self.assertEqual(count, 1)
+    
+    def test_bfs_vs_astar_same_result(self):
+        """Test that BFS and A* give same results"""
+        initial = [[1, 2, 3], [4, 0, 6], [7, 8, 5]]
+        goal = [[1, 2, 3], [4, 6, 0], [7, 8, 5]]
+        
+        path_bfs, count_bfs = breadth_first_search(initial, goal)
+        path_astar, count_astar = a_star_search(initial, goal)
+        
+        self.assertEqual(count_bfs, count_astar)
+        self.assertEqual(len(path_bfs), len(path_astar))
+
+class TestHeuristics(unittest.TestCase):
+    
+    def test_eval_state_perfect_match(self):
+        """Test eval_state with perfect match"""
+        state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        
+        result = eval_state(state, goal)
+        self.assertEqual(result, 9)  # All 9 positions match
+    
+    def test_eval_state_no_match(self):
+        """Test eval_state with no matches"""
+        state = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        
+        result = eval_state(state, goal)
+        self.assertEqual(result, 0)  # No positions match
+    
+    def test_misplaced_tiles_heuristic(self):
+        """Test misplaced tiles heuristic"""
+        state = [1, 2, 3, 4, 0, 6, 7, 8, 5]
+        goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        
+        result = misplaced_tiles_heuristic(state, goal)
+        self.assertEqual(result, 2)  # Tiles 5 and 8 are misplaced (excluding empty space)
+    
+    def test_misplaced_tiles_perfect_match(self):
+        """Test misplaced tiles heuristic with perfect match"""
+        state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        
+        result = misplaced_tiles_heuristic(state, goal)
+        self.assertEqual(result, 0)  # No misplaced tiles
+
 if __name__ == '__main__':
     unittest.main()
